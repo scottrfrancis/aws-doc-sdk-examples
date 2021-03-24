@@ -16,40 +16,56 @@ package com.example.iotsitewise;
 import software.amazon.awssdk.regions.Region;
 
 import software.amazon.awssdk.services.iotsitewise.IoTSiteWiseClient;
-import software.amazon.awssdk.services.iotsitewise.model.ListAssetsFilter;
-import software.amazon.awssdk.services.iotsitewise.model.ListAssetsRequest;
-import software.amazon.awssdk.services.iotsitewise.model.ListAssetsResponse;
-import software.amazon.awssdk.services.iotsitewise.model.IoTSiteWiseException;
+import software.amazon.awssdk.services.iotsitewise.model.*;
 
 import java.util.List;
-import java.util.ListIterator;
+import static java.lang.System.out;
+import static java.lang.System.err;
 
 public class ListAssets {
 
+//    public static class NoAssetsException extends Exception {}
+
     public static void main(String[] args) {
+        Region region = Region.US_WEST_2;
 
         final String USAGE = "\n" +
                 "Usage:\n" +
-                "    ListAssets\n\n";
+                "    ListAssets <region> \n\n" +
+                "Where:\n" +
+                "    region is desired region - defaults to us-west-2\n\n";
 
-//        if (args.length != 1) {
-//           System.out.println(USAGE);
-//           System.exit(1);
-//         }
-
-        Region region = Region.US_WEST_2;
+        if (args.length > 0) {
+            region = Region.of(args[0]);
+        }
 
         IoTSiteWiseClient sitewise = IoTSiteWiseClient.builder()
                 .region(region)
                 .build();
 
-        listAssets(sitewise);
+        ListAssetsResponse topLevelAssetResponse = listTopLevelAssets(sitewise);
 
-        sitewise.close();
+        class NoAssetsException extends Exception {}
+        try {
+            if (!topLevelAssetResponse.hasAssetSummaries()) {
+                throw new NoAssetsException();
+            }
+
+            List<AssetSummary> assetSummaryList = topLevelAssetResponse.assetSummaries();
+            out.println("Top level assets list:");
+            assetSummaryList.forEach((i) -> {
+                out.println(i.toString());
+            });
+        } catch (NoAssetsException e) {
+            out.println("No top level assets present");
+        } finally {
+            out.println("closing client");
+            sitewise.close();
+        }
     }
 
-    public static void listAssets(IoTSiteWiseClient sitewise) {
-        System.out.println("Listing Assets");
+    public static ListAssetsResponse listTopLevelAssets(IoTSiteWiseClient sitewise) {
+        out.println("Listing Assets");
        try {
             ListAssetsRequest listAssetsRequest = ListAssetsRequest
                     .builder()
@@ -57,12 +73,11 @@ public class ListAssets {
                     .build();
 
             ListAssetsResponse listAssetsResponse = sitewise.listAssets(listAssetsRequest);
-            System.out.println("\n\nTOP_LEVEL Assets:\n\n");
-            System.out.println(listAssetsResponse.toString());
-            System.out.println("\n\n");
+            return listAssetsResponse;
         } catch (IoTSiteWiseException e) {
-            System.err.println(e.awsErrorDetails().errorMessage());
+            err.println(e.awsErrorDetails().errorMessage());
             System.exit(1);
         }
+        return null;
     }
 }

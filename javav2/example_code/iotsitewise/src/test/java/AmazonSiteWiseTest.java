@@ -42,7 +42,7 @@ public class AmazonSiteWiseTest {
     @Test
     @Order(13)
     public void ListAssets() {
-        ListAssets.listAssets(sitewise);
+        ListAssets.listTopLevelAssets(sitewise);
         System.out.println("Test 13 passed");
     }
 
