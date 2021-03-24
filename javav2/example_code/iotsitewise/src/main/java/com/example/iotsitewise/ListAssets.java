@@ -1,18 +1,9 @@
-//snippet-sourcedescription:[ListObjects.java demonstrates how to list objects located in a given Amazon Simple Storage Service (Amazon S3) bucket.]
-//snippet-keyword:[AWS SDK for Java v2]
-//snippet-keyword:[Code Sample]
-//snippet-service:[Amazon S3]
-//snippet-sourcetype:[full-example]
-//snippet-sourcedate:[01/07/2021]
-//snippet-sourceauthor:[scmacdon-aws]
-
 /*
    Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
    SPDX-License-Identifier: Apache-2.0
 */
 package com.example.iotsitewise;
 
-// snippet-start:[s3.java2.list_assets.import]
 import software.amazon.awssdk.regions.Region;
 
 import software.amazon.awssdk.services.iotsitewise.IoTSiteWiseClient;
@@ -23,8 +14,6 @@ import static java.lang.System.out;
 import static java.lang.System.err;
 
 public class ListAssets {
-
-//    public static class NoAssetsException extends Exception {}
 
     public static void main(String[] args) {
         Region region = Region.US_WEST_2;
@@ -56,6 +45,8 @@ public class ListAssets {
             assetSummaryList.forEach((i) -> {
                 out.println(i.toString());
             });
+            out.println("\n\ncompare above output with \n\n" +
+                    "    aws iotsitewise list-assets --filter TOP_LEVEL\n\n");
         } catch (NoAssetsException e) {
             out.println("No top level assets present");
         } finally {
@@ -66,18 +57,17 @@ public class ListAssets {
 
     public static ListAssetsResponse listTopLevelAssets(IoTSiteWiseClient sitewise) {
         out.println("Listing Assets");
+        ListAssetsResponse listAssetsResponse = null;
        try {
             ListAssetsRequest listAssetsRequest = ListAssetsRequest
                     .builder()
                     .filter(ListAssetsFilter.TOP_LEVEL)
                     .build();
 
-            ListAssetsResponse listAssetsResponse = sitewise.listAssets(listAssetsRequest);
-            return listAssetsResponse;
+             listAssetsResponse = sitewise.listAssets(listAssetsRequest);
         } catch (IoTSiteWiseException e) {
             err.println(e.awsErrorDetails().errorMessage());
-            System.exit(1);
         }
-        return null;
+        return listAssetsResponse;
     }
 }

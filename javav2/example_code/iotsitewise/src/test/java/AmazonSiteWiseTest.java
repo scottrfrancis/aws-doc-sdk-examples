@@ -5,10 +5,8 @@
 
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import software.amazon.awssdk.regions.Region;
 import java.io.*;
-import java.util.*;
 import com.example.iotsitewise.*;
 import software.amazon.awssdk.services.iotsitewise.IoTSiteWiseClient;
 
@@ -23,7 +21,6 @@ public class AmazonSiteWiseTest {
 
     @BeforeAll
     public static void setUp() throws IOException {
-
         // Run tests on Real AWS Resources
         region = Region.US_WEST_2;
         sitewise = IoTSiteWiseClient.builder()
@@ -32,18 +29,17 @@ public class AmazonSiteWiseTest {
     }
 
     @Test
-    @Order(1)
+    @Order(0)
     public void whenInitializingAWSIoTSiteWiseService_thenNotNull() {
         assertNotNull(sitewise);
-        System.out.println("Test 1 passed");
+        System.out.println("Test 0 (setup) - SiteWise Client Setup passed");
     }
 
-
     @Test
-    @Order(13)
+    @Order(1)
     public void ListAssets() {
-        ListAssets.listTopLevelAssets(sitewise);
-        System.out.println("Test 13 passed");
+        assertNotNull(ListAssets.listTopLevelAssets(sitewise));
+        System.out.println("Test 1 - Top Level Asset List passed");
     }
 
 }
