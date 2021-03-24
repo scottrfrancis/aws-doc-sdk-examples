@@ -14,9 +14,9 @@ import java.util.List;
 import static java.lang.System.out;
 
 public class ListAssets {
-    private static final IoTSiteWiseClient iotSiteWiseClient = IoTSiteWiseClient.create();
-
     public static void main(String[] args) {
+        IoTSiteWiseClient iotSiteWiseClient = IoTSiteWiseClient.create();
+
         ListAssetsRequest listAssetsRequest = ListAssetsRequest.builder()
                 // Request only the top level assets
                 .filter(ListAssetsFilter.TOP_LEVEL)
