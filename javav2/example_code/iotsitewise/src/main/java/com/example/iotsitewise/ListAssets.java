@@ -4,12 +4,12 @@
 */
 package com.example.iotsitewise;
 
-import com.awslabs.resultsiterator.implementations.ResultsIteratorAbstract;
-import io.vavr.collection.Stream;
 import software.amazon.awssdk.services.iotsitewise.IoTSiteWiseClient;
 import software.amazon.awssdk.services.iotsitewise.model.AssetSummary;
 import software.amazon.awssdk.services.iotsitewise.model.ListAssetsFilter;
 import software.amazon.awssdk.services.iotsitewise.model.ListAssetsRequest;
+
+import java.util.List;
 
 import static java.lang.System.out;
 
@@ -22,17 +22,18 @@ public class ListAssets {
                 .filter(ListAssetsFilter.TOP_LEVEL)
                 .build();
 
-        Stream<AssetSummary> topLevelAssetStream = new ResultsIteratorAbstract<AssetSummary>(iotSiteWiseClient, listAssetsRequest) {
-        }.stream();
+        List<AssetSummary> topLevelAssetList = iotSiteWiseClient
+                .listAssets(listAssetsRequest)
+                .assetSummaries();
 
-        if (topLevelAssetStream.isEmpty()) {
+        if (topLevelAssetList.isEmpty()) {
             out.println("No top level assets present");
             return;
         }
 
         out.println("Top level assets list:");
 
-        topLevelAssetStream
+        topLevelAssetList.stream()
                 // Convert the asset summaries to strings
                 .map(AssetSummary::toString)
                 // Print them
